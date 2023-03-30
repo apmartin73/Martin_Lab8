@@ -86,10 +86,10 @@ int main()
         int x = 50 + ((700 / 5) * i);
         Vector2f sz = duck.getSize();
         duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
-        duck.setVelocity(Vector2f(0.25, 0));
+        duck.setVelocity(Vector2f(0.15, 0));
         world.AddPhysicsBody(duck);
         duck.onCollision =
-            [&drawingArrow, &world, &arrow, &duck, &ducks, &score]
+            [&drawingArrow, &right, &world, &arrow, &duck, &ducks, &score]
         (PhysicsBodyCollisionResult result) {
             if (result.object2 == arrow) {
                 
@@ -97,9 +97,11 @@ int main()
                 world.RemovePhysicsBody(arrow);
                 world.RemovePhysicsBody(duck);
                 ducks.QueueRemove(duck);
-                score += 10;
+                score += 100;
             }
+
         };
+
     }
 
     top.onCollision = [&drawingArrow, &world, &arrow]
@@ -107,6 +109,7 @@ int main()
         drawingArrow = false;
         world.RemovePhysicsBody(arrow);
     };
+
 
    // Font fnt;
    // if (!fnt.loadFromFile("arial.ttf")) {
