@@ -133,14 +133,15 @@ int main()
                 duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
                 duck.setVelocity(Vector2f(0.15, 0));
                 world.AddPhysicsBody(duck);
-                duck.onCollision = [&drawingArrow, &right, &world, &arrow, &duck, &ducks, &score](PhysicsBodyCollisionResult result) {
-                    if (result.object2 == arrow) {
+                duck.onCollision = [&drawingArrow, &world, &arrow, &duck, &ducks, &score, &right, &redTex](PhysicsBodyCollisionResult result) {
 
+
+                    if (result.object2 == arrow) {
                         drawingArrow = false;
                         world.RemovePhysicsBody(arrow);
                         world.RemovePhysicsBody(duck);
                         ducks.QueueRemove(duck);
-                        score += 100;
+                        score += 50;
                     }
 
                     if (result.object2 == right) {
@@ -158,18 +159,21 @@ int main()
             Text scoreText;
             scoreText.setString(to_string(score));
             scoreText.setFont(fnt);
+            scoreText.setPosition(Vector2f(780 - GetTextSize(scoreText).x, 550));
             window.draw(scoreText);
             Text arrowCountText;
             arrowCountText.setString(to_string(arrows));
             arrowCountText.setFont(fnt);
-            arrowCountText.setPosition(Vector2f(790 - GetTextSize(arrowCountText).x, 0));
+            arrowCountText.setPosition(Vector2f(30 - GetTextSize(arrowCountText).x, 550));
             window.draw(arrowCountText);
-            world.VisualizeAllBounds(window);
 
             window.display();
 
         }
+
     }
+
+
     window.display(); // this is needed to see the last frame
     Text gameOverText;
     gameOverText.setString("GAME OVER");
@@ -178,12 +182,13 @@ int main()
     gameOverText.setPosition(400 - (sz.x / 2), 300 - (sz.y / 2));
     window.draw(gameOverText);
     window.display();
-    while (true);
+
+    while (true) {
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
         main();
         }
     }
-
+}
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
