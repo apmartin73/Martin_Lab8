@@ -64,13 +64,13 @@ int main()
     top.setCenter(Vector2f(400, 5));
     top.setStatic(true);
     world.AddPhysicsBody(top);
-
+    /*
     PhysicsRectangle left;
     left.setSize(Vector2f(10, 600));
     left.setCenter(Vector2f(5, 300));
     left.setStatic(true);
     world.AddPhysicsBody(left);
-
+    */
     PhysicsRectangle right;
     right.setSize(Vector2f(10, 600));
     right.setCenter(Vector2f(795, 300));
@@ -80,30 +80,7 @@ int main()
     Texture redTex;
     LoadTex(redTex, "images/duck.png");
     PhysicsShapeList<PhysicsSprite> ducks;
-    for (int i(0); i < 6; i++) {
-        PhysicsSprite& duck = ducks.Create();
-        duck.setTexture(redTex);
-        int x = 50 + ((700 / 5) * i);
-        Vector2f sz = duck.getSize();
-        duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
-        duck.setVelocity(Vector2f(0.15, 0));
-        world.AddPhysicsBody(duck);
-        duck.onCollision =
-            [&drawingArrow, &right, &world, &arrow, &duck, &ducks, &score]
-        (PhysicsBodyCollisionResult result) {
-            if (result.object2 == arrow) {
                 
-                drawingArrow = false;
-                world.RemovePhysicsBody(arrow);
-                world.RemovePhysicsBody(duck);
-                ducks.QueueRemove(duck);
-                score += 100;
-            }
-
-        };
-
-    }
-
     top.onCollision = [&drawingArrow, &world, &arrow]
     (PhysicsBodyCollisionResult result) {
         drawingArrow = false;
@@ -111,20 +88,24 @@ int main()
     };
 
 
-   // Font fnt;
-   // if (!fnt.loadFromFile("arial.ttf")) {
-   //     cout << "Could not load font." << endl;
-   //     exit(3);
-   // }
+    Font fnt;
+    if (!fnt.loadFromFile("images/arial.ttf")) {
+        cout << "Could not load font." << endl;
+        exit(3);
+    }
+
     Clock clock;
     Time lastTime(clock.getElapsedTime());
     Time currentTime(lastTime);
+
+    long timeran = 0;
 
     while ((arrows > 0) || drawingArrow) {
         currentTime = clock.getElapsedTime();
         Time deltaTime = currentTime - lastTime;
         long deltaMS = deltaTime.asMilliseconds();
         if (deltaMS > 9) {
+            timeran += deltaMS;
             lastTime = currentTime;
             world.UpdatePhysics(deltaMS);
             MoveCrossbow(crossBow, deltaMS);
@@ -142,6 +123,33 @@ int main()
             if (drawingArrow) {
                 window.draw(arrow);
             }
+
+            if (timeran > 500) {
+                timeran = 0;
+                PhysicsSprite& duck = ducks.Create();
+                duck.setTexture(redTex);
+                int x = 0;
+                Vector2f sz = duck.getSize();
+                duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
+                duck.setVelocity(Vector2f(0.15, 0));
+                world.AddPhysicsBody(duck);
+                duck.onCollision = [&drawingArrow, &right, &world, &arrow, &duck, &ducks, &score](PhysicsBodyCollisionResult result) {
+                    if (result.object2 == arrow) {
+
+                        drawingArrow = false;
+                        world.RemovePhysicsBody(arrow);
+                        world.RemovePhysicsBody(duck);
+                        ducks.QueueRemove(duck);
+                        score += 100;
+                    }
+
+                    if (result.object2 == right) {
+                        world.RemovePhysicsBody(duck);
+                        ducks.QueueRemove(duck);
+                    }
+                };
+            }
+
             ducks.DoRemovals();
             for (PhysicsShape& duck : ducks) {
                 window.draw((PhysicsSprite&)duck);
@@ -149,14 +157,14 @@ int main()
             window.draw(crossBow);
             Text scoreText;
             scoreText.setString(to_string(score));
-           // scoreText.setFont(fnt);
+            scoreText.setFont(fnt);
             window.draw(scoreText);
             Text arrowCountText;
             arrowCountText.setString(to_string(arrows));
-       //     arrowCountText.setFont(fnt);
+            arrowCountText.setFont(fnt);
             arrowCountText.setPosition(Vector2f(790 - GetTextSize(arrowCountText).x, 0));
             window.draw(arrowCountText);
-            //world.VisualizeAllBounds(window);
+            world.VisualizeAllBounds(window);
 
             window.display();
 
@@ -165,14 +173,17 @@ int main()
     window.display(); // this is needed to see the last frame
     Text gameOverText;
     gameOverText.setString("GAME OVER");
- //   gameOverText.setFont(fnt);
+    gameOverText.setFont(fnt);
     sz = GetTextSize(gameOverText);
     gameOverText.setPosition(400 - (sz.x / 2), 300 - (sz.y / 2));
     window.draw(gameOverText);
     window.display();
     while (true);
+        if (Keyboard::isKeyPressed(Keyboard::Space)) {
+        main();
+        }
+    }
 
-}
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
