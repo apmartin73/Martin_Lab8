@@ -50,8 +50,7 @@ int main()
     LoadTex(cbowTex, "images/crossbow.png");
     crossBow.setTexture(cbowTex);
     Vector2f sz = crossBow.getSize();
-    crossBow.setCenter(Vector2f(400,
-        600 - (sz.y / 2)));
+    crossBow.setCenter(Vector2f(400, 600 - (sz.y / 2)));
 
     PhysicsSprite arrow;
     Texture arrowTex;
@@ -59,11 +58,13 @@ int main()
     arrow.setTexture(arrowTex);
     bool drawingArrow(false);
 
+
     PhysicsRectangle top;
     top.setSize(Vector2f(800, 10));
     top.setCenter(Vector2f(400, 5));
     top.setStatic(true);
     world.AddPhysicsBody(top);
+
     /*
     PhysicsRectangle left;
     left.setSize(Vector2f(10, 600));
@@ -71,6 +72,7 @@ int main()
     left.setStatic(true);
     world.AddPhysicsBody(left);
     */
+
     PhysicsRectangle right;
     right.setSize(Vector2f(10, 600));
     right.setCenter(Vector2f(795, 300));
@@ -79,14 +81,14 @@ int main()
 
     Texture redTex;
     LoadTex(redTex, "images/duck.png");
+
     PhysicsShapeList<PhysicsSprite> ducks;
-                
+
     top.onCollision = [&drawingArrow, &world, &arrow]
     (PhysicsBodyCollisionResult result) {
         drawingArrow = false;
         world.RemovePhysicsBody(arrow);
     };
-
 
     Font fnt;
     if (!fnt.loadFromFile("images/arial.ttf")) {
@@ -105,7 +107,9 @@ int main()
         Time deltaTime = currentTime - lastTime;
         long deltaMS = deltaTime.asMilliseconds();
         if (deltaMS > 9) {
+
             timeran += deltaMS;
+
             lastTime = currentTime;
             world.UpdatePhysics(deltaMS);
             MoveCrossbow(crossBow, deltaMS);
@@ -131,7 +135,7 @@ int main()
                 int x = 0;
                 Vector2f sz = duck.getSize();
                 duck.setCenter(Vector2f(x, 20 + (sz.y / 2)));
-                duck.setVelocity(Vector2f(0.15, 0));
+                duck.setVelocity(Vector2f(0.25, 0));
                 world.AddPhysicsBody(duck);
                 duck.onCollision = [&drawingArrow, &world, &arrow, &duck, &ducks, &score, &right, &redTex](PhysicsBodyCollisionResult result) {
 
@@ -185,7 +189,7 @@ int main()
 
     while (true) {
         if (Keyboard::isKeyPressed(Keyboard::Space)) {
-        main();
+            main();
         }
     }
 }
